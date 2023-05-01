@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import GoogleSignIn
 
 class LoginScene: UIViewController {
     
@@ -49,6 +50,38 @@ class LoginScene: UIViewController {
     @IBOutlet weak var lPassword: UITextField!
     
     @IBOutlet weak var lLoginError: UILabel!
+    
+    @IBAction func LoginGooglePressed(_ sender: UIButton) {
+        GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
+          guard error == nil else { return }
+
+          // If sign in succeeded, display the app's main content View.
+            print(signInResult?.user.idToken?.tokenString as Any)
+            print(signInResult?.user.userID as Any)
+            print(signInResult?.user.profile?.email as Any)
+            AppDelegate._bc.authenticateGoogleOpenId(
+                                                signInResult?.user.userID,
+//                                                signInResult?.user.profile?.email,
+                                                 idToken: signInResult?.user.idToken?.tokenString,
+                                                 forceCreate: false,
+                                                 completionBlock: self.onAuthenticate,
+                                                 errorCompletionBlock: self.onAuthenticateFailed,
+                                                 cbObject: nil)
+        }
+    }
+
+    @IBAction func AttachedGooglePressed(_ sender: UIButton) {
+        GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
+          guard error == nil else { return }
+
+          // If sign in succeeded, display the app's main content View.
+            print(signInResult?.user.idToken?.tokenString as Any)
+            print(signInResult?.user.userID as Any)
+            print(signInResult?.user.profile?.email as Any)
+            AppDelegate._bc.identityService.attachGoogleOpenIdIdentity(signInResult?.user.userID, idToken: signInResult?.user.idToken?.tokenString, completionBlock: nil, errorCompletionBlock: self.onAuthenticateFailed, cbObject: nil)
+        }
+    }
+    
     
     @IBAction func OnLoginClicked(_ sender: Any) {
         
@@ -145,6 +178,25 @@ class LoginScene: UIViewController {
     @IBOutlet weak var rPassword: UITextField!
     @IBOutlet weak var rName: UITextField!
     @IBOutlet weak var rRegisterError: UILabel!
+    
+    @IBAction func signInWithGooglePressed(_ sender: UIButton) {
+        GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
+          guard error == nil else { return }
+
+          // If sign in succeeded, display the app's main content View.
+            print(signInResult?.user.idToken?.tokenString as Any)
+            print(signInResult?.user.userID as Any)
+            print(signInResult?.user.profile?.email as Any)
+            AppDelegate._bc.authenticateGoogleOpenId(
+                                                signInResult?.user.userID,
+//                                                signInResult?.user.profile?.email,
+                                                 idToken: signInResult?.user.idToken?.tokenString,
+                                                 forceCreate: true,
+                                                 completionBlock: self.onAuthenticate,
+                                                 errorCompletionBlock: self.onAuthenticateFailed,
+                                                 cbObject: nil)
+        }
+    }
     
     @IBAction func onRegisterClicked(_ sender: Any) {
         AppDelegate._bc.authenticateEmailPassword(rEmail.text,

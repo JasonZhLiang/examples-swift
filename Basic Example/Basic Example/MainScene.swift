@@ -265,7 +265,7 @@ class MainScene: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource 
         
         AppDelegate._bc.getBCClient()?.rttService.registerLobbyCallback(onLobbyEvent, cbObject: nil);
         
-        AppDelegate._bc.lobbyService.findOrCreateLobby("Lobby", rating: 0, maxSteps: 1, algo: "{\"strategy\":\"ranged-absolute\",\"alignment\":\"center\",\"ranges\":[1000]}", filterJson: "{}", otherUserCxIds: [], isReady: true, extraJson: "{}", teamCode: "all", settings: "{}", completionBlock: onFindLobbySuccess, errorCompletionBlock: onFindLobbyFailed, cbObject: nil);
+        AppDelegate._bc.lobbyService.findOrCreateLobby("Relay_lobbyT_v2", rating: 0, maxSteps: 1, algo: "{\"strategy\":\"ranged-absolute\",\"alignment\":\"center\",\"ranges\":[1000]}", filterJson: "{}", otherUserCxIds: [], isReady: true, extraJson: "{}", teamCode: "all", settings: "{}", completionBlock: onFindLobbySuccess, errorCompletionBlock: onFindLobbyFailed, cbObject: nil);
     }
     
     func onRTTFailed(message:String?, cbObject: NSObject?) {
@@ -321,7 +321,6 @@ class MainScene: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource 
     
     func connectToRelay(lobbyId:String, passcode:String, host:String, port:NSInteger) {
         self.relayLog.text = self.relayLog.text! + "Connecting to Relay Server...\n";
-        
         AppDelegate._bc.getBCClient()?.relayService.registerSystemCallback(onRelaySystemMessage, cbObject: nil);
         AppDelegate._bc.getBCClient()?.relayService.registerCallback(onRelayMessage, cbObject: nil);
         AppDelegate._bc.getBCClient()?.relayService.connect(BCRelayConnectionType.CONNECTION_TYPE_TCP, host: host, port: Int32(port), passcode: passcode, lobbyId: lobbyId, connectSuccess:onRelayConnected, connectFailure:onRelayDisconnected, cbObject: nil);

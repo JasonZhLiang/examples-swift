@@ -9,6 +9,7 @@
 import UIKit
 import BrainCloud
 import UserNotifications
+import GoogleSignIn
 
 
 @UIApplicationMain
@@ -67,25 +68,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         AppDelegate._bc.initialize(config?["BCServerUrl"] as? String,
                                    secretKey: config?["BCSecretKey"] as? String, // Replace the Secret and
                                    appId: config?["BCAppId"] as? String, // AppId with the one on the dashboard
-                                   appVersion: "4.13.0",
+                                   appVersion: "1.0.0",
                                    companyName: "brainCloud",
                                    appName: "Basic - Swift")
         
         
-        let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
-            // Enable or disable features based on authorization.
+//        let center = UNUserNotificationCenter.current()
+//        center.requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
+//            // Enable or disable features based on authorization.
+//        }
+//        application.registerForRemoteNotifications()
+//        UNUserNotificationCenter.current().delegate = self
+        UIApplication.shared.registerForRemoteNotifications()
+        
+        
+        GIDSignIn.sharedInstance.restorePreviousSignIn { user, error in
+          if error != nil || user == nil {
+            // Show the app's signed-out state.
+          } else {
+            // Show the app's signed-in state.
+          }
         }
-        application.registerForRemoteNotifications()
-        UNUserNotificationCenter.current().delegate = self
         
         return true
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         
-        AppDelegate.pushToken = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
-        print(AppDelegate.pushToken ?? "")
+//        AppDelegate.pushToken = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+//        self.sendDeviceTokenToServer(data: deviceToken)
+        AppDelegate.pushToken = deviceToken.base64EncodedString()
+        print("pushToken:\((AppDelegate.pushToken ?? ""))")
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
@@ -116,6 +129,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func applicationWillTerminate(_ application: UIApplication) {
         
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+      var handled: Bool
+
+      handled = GIDSignIn.sharedInstance.handle(url)
+      if handled {
+        return true
+      }
+
+      // Handle other custom URL types.
+
+      // If not handled by this app, return false.
+      return false
     }
 }
 
